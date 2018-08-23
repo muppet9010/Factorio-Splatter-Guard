@@ -1,7 +1,5 @@
 /c
 
-game.print("Jumps a player on foot off the train track when a moving train gets very close. The player is held still for 1 second after being jumped.")
-
 TrainJumper = {}
 
 TrainJumper.playersJumpedDict = {}
