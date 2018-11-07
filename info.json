@@ -1,0 +1,11 @@
+{
+    "name": "splatter_guard",
+    "version": "0.1.1",
+    "title": "Splatter Guard",
+    "author": "Muppet9010",
+    "contact": "",
+    "homepage": "",
+    "factorio_version": "0.16",
+    "dependencies": ["base >= 0.16"],
+    "description": "Stops you being splattered by trains"
+}
