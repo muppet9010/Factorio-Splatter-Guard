@@ -1,0 +1,7 @@
+0.1.1
+	Added: Protection from players running jin to the side of the train, not just the trains front and back.
+	Changed: Train detection logic changed to be more flexible and lower UPS impact
+---------------------------------------------------------------------------------------------------
+0.1.0
+	Initial Release
+	Preemtively jumps the player out of the way of incoming trains and holds them safely still.
