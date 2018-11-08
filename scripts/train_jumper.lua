@@ -49,10 +49,12 @@ TrainJumper.PlayerManager = function(player)
 end
 
 TrainJumper.JumpPlayerToFreeSpot = function(player)
+	local oldPosition = player.position
     local newPosition = TrainJumper.FindNewPlayerPosition(player.surface, player.position, 1)
     if not player.teleport(newPosition, player.surface) then
         game.print("ERROR - failed to jump player '" .. player.name .. "' to position(" .. newPosition.x .. ", " .. newPosition.y .. ")")
     end
+	player.surface.create_entity{ name = "teleported-smoke", position = oldPosition}
     TrainJumper.playersJumpedDict[player.index] = game.tick + 60
 end
 
