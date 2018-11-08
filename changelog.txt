@@ -1,5 +1,7 @@
 0.1.1
-	Added: Protection from players running jin to the side of the train, not just the trains front and back.
+	Added: Protection from players running in to the side of the train, not just the trains front and back.
+	Added: Option of Reactive Only to train impacts, saving you after a train has hit you.
+	Added: Preemtive train protection includes the Reactive option as a backup.
 	Changed: Train detection logic changed to be more flexible and lower UPS impact
 ---------------------------------------------------------------------------------------------------
 0.1.0

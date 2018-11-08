@@ -28,10 +28,6 @@ end
 
 TrainJumper.PlayerManager = function(player)
 	Utility.DebugLogging("PlayerManager", player.name .. " PlayerManager")
-    if not Track.IsTrackNearPosition(player.surface, player.position, TrainJumper.playerSafeBox) then
-		Utility.DebugLogging("PlayerManager", "not near track")
-        return
-	end
     if player.character == nil then
 		Utility.DebugLogging("PlayerManager", "no character")
 		return
@@ -39,6 +35,10 @@ TrainJumper.PlayerManager = function(player)
     if player.vehicle ~= nil then
 		Utility.DebugLogging("PlayerManager", "in vehicle")
 		return
+	end
+    if not Track.IsTrackNearPosition(player.surface, player.position, TrainJumper.playerSafeBox) then
+		Utility.DebugLogging("PlayerManager", "not near track")
+        return
 	end
     if not Train.IsATrainNearPlayer(player) then
 		Utility.DebugLogging("PlayerManager", "not near train")
@@ -90,4 +90,37 @@ TrainJumper.CheckJumpPosition = function(surface, position)
         return false
     end
     return true
+end
+
+TrainJumper.SetTrainAvoidEvents = function()
+	if ModSettings.trainAvoidMode == "Preemtive" then
+		script.on_event(defines.events.on_tick, TrainJumper.Manager)
+		script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
+	elseif ModSettings.trainAvoidMode == "Reactive Only" then
+		script.on_event(defines.events.on_tick, TrainJumper.JumpedPlayersManager)
+		script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
+	else
+		script.on_event(defines.events.on_tick, nil)
+		script.on_event(defines.events.on_entity_damaged, nil)
+	end
+end
+
+TrainJumper.EntityDamaged = function(event)
+	local entity = event.entity
+	Utility.DebugLogging("EntityDamaged", entity.name .. " EntityDamaged")
+	if entity.player == nil then
+		Utility.DebugLogging("EntityDamaged", "entity not player")
+		return
+	end
+	Utility.DebugLogging("EntityDamaged", "is player: " .. entity.player.name)
+	if not Train.IsEntityATrainType(event.cause) then
+		Utility.DebugLogging("EntityDamaged", "cause not train")
+		return
+	end
+	Utility.DebugLogging("EntityDamaged", "final_damage_amount: " .. event.final_damage_amount)
+	Utility.DebugLogging("EntityDamaged", "starting entity health: " .. entity.health)
+	entity.health = entity.health + event.final_damage_amount
+	Utility.DebugLogging("EntityDamaged", "returned entity to health: " .. entity.health)
+	Utility.DebugLogging("EntityDamaged", "going to jump")
+    TrainJumper.JumpPlayerToFreeSpot(entity.player)
 end
