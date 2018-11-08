@@ -4,8 +4,12 @@
 
 Stops you being splattered by trains.
 
-If you are in imminent danger of a train hitting you the mod will teleport you a short distance away to a safe spot. It will then hold you in place for a second to avoid you running back into a train.
+Preemtive option will constantly check if you are in imminent danger of a train hitting you and teleport you a short distance away to a safe spot. The Preemtive option enables the Reactive behaviour as a fall back should the mod fail to detect a danger.
+Reactive Only option will revert any personall damage done to you by a train and teleport you a short distance away to a safe spot.
+if you are teleported the mod will hold you in place for a second to avoid you running back into a train.
 
-Should be fully compatible with all other mods.
+Should be fully compatible with all other mods. If another mod makes you invincible you may not jump.
 
-The mod will have a UPS cost per player as it has to continuously look for dangers in advance. It has been optimised to reduce UPS impact.
+If the Preemtive option is enabled there will be a small UPS cost per player as it has to continuously look for dangers in advance.
+
+Currently if you are not on full health and hit by a train for a lot of damage you may be returned to full health instantly. Shield damage will not be repaired.

@@ -124,3 +124,11 @@ Train.GetTrainsWithEntitiesFromTrainEntitiesArrAsDictionary = function(trainEnti
 	end
     return trainsWithEntitiesDict
 end
+
+Train.IsEntityATrainType = function(entity)
+	if entity == nil then return false end
+	if entity.type == "locomotive" then return true end
+	if entity.type == "cargo-wagon" then return true end
+	if entity.type == "fluid-wagon" then return true end
+	return false
+end

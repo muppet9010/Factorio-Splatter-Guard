@@ -4,6 +4,8 @@ Utility.debugLogging["Always"] = true
 Utility.debugLogging["PlayerManager"] = false
 Utility.debugLogging["IsATrainNearPlayer"] = false
 Utility.debugLogging["GetTrackForTrainEntityAsArray"] = false
+Utility.debugLogging["PlayerPreDied"] = false
+Utility.debugLogging["EntityDamaged"] = false
 
 Utility.CalculateBoundingBoxFromPositionAndRange = function(position, range)
     return {
