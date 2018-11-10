@@ -1,3 +1,8 @@
+0.1.3
+	Fixed: error when non player entity was damaged
+	Fixed: mod inactive after loading save which previously had current mod version
+
+---------------------------------------------------------------------------------------------------
 0.1.2
 	Fixed: Error with 0.1.1 on loading save that had the previous version of the mod
 

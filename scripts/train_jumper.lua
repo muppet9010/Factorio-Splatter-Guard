@@ -95,6 +95,7 @@ TrainJumper.CheckJumpPosition = function(surface, position)
 end
 
 TrainJumper.SetTrainAvoidEvents = function()
+	if ModSettings == nil or ModSettings.trainAvoidMode == nil then return end --Catch OnLoad being called before ModChnaged on mod upgrade and skip it this time
 	if ModSettings.trainAvoidMode == "Preemtive" then
 		script.on_event(defines.events.on_tick, TrainJumper.Manager)
 		script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
@@ -110,11 +111,14 @@ end
 TrainJumper.EntityDamaged = function(event)
 	local entity = event.entity
 	Utility.DebugLogging("EntityDamaged", entity.name .. " EntityDamaged")
-	if entity.player == nil then
-		Utility.DebugLogging("EntityDamaged", "entity not player")
+	if entity.type ~= "player" then
+		Utility.DebugLogging("EntityDamaged", "entity not character")
 		return
 	end
-	Utility.DebugLogging("EntityDamaged", "is player: " .. entity.player.name)
+	if entity.player == nil then
+		Utility.DebugLogging("EntityDamaged", "entity has no player")
+		return
+	end
 	if not Train.IsEntityATrainType(event.cause) then
 		Utility.DebugLogging("EntityDamaged", "cause not train")
 		return
