@@ -37,6 +37,7 @@ end
 
 OnLoad = function()
 	ReferenceGlobals()
+	TrainJumper.SetTrainAvoidEvents()
 end
 
 OnSettingChanged = function(event)
