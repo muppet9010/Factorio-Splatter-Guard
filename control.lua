@@ -32,7 +32,6 @@ OnStartup = function()
 	CreateGlobals()
 	ReferenceGlobals()
 	UpdateSetting(nil)
-	TrainJumper.SetTrainAvoidEvents()
 end
 
 OnLoad = function()
