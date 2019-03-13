@@ -1,64 +1,79 @@
-TrainJumper = {}
+local Utils = require("utility/utils")
+local Logging = require("utility/logging")
+local Track = require("track")
+local Train = require("train")
+local TrainJumper = {}
 
-TrainJumper.playersJumpedDict = {}
-TrainJumper.playerSafeBox = 0.5
-TrainJumper.trainSearchSize = 3
-TrainJumper.trainTrackSearchSize = 0.75
 
-TrainJumper.Manager = function()
+function TrainJumper.PopulateStateDefaults()
+    local state = global.Mod.State
+    if state.playersJumpedDict == nil then state.playersJumpedDict = {} end
+    state.playerSafeBox = 0.5
+    state.trainSearchSize = 3
+    state.trainTrackSearchSize = 0.75
+end
+
+
+function TrainJumper.Manager()
     for i, player in pairs(game.connected_players) do
        TrainJumper.PlayerManager(player)
     end
     TrainJumper.JumpedPlayersManager()
 end
 
-TrainJumper.JumpedPlayersManager = function()
-    for playerIndex, endTick in pairs(TrainJumper.playersJumpedDict) do
+
+function TrainJumper.JumpedPlayersManager()
+    for playerIndex, endTick in pairs(global.Mod.State.playersJumpedDict) do
         if endTick >= game.tick then
-            if game.players[playerIndex] ~= nil then
-                game.players[playerIndex].walking_state = {false}
+            local player = game.get_player(playerIndex)
+            if player ~= nil then
+                player.walking_state = {walking=false, direction=1}
             else
-                table.remove(TrainJumper.playersJumpedDict, playerIndex)
+                table.remove(global.Mod.State.playersJumpedDict, playerIndex)
             end
         else
-            table.remove(TrainJumper.playersJumpedDict, playerIndex)
+            table.remove(global.Mod.State.playersJumpedDict, playerIndex)
         end
     end
 end
 
-TrainJumper.PlayerManager = function(player)
-	Utility.DebugLogging("PlayerManager", player.name .. " PlayerManager")
+
+function TrainJumper.PlayerManager(player)
+    local Log = false
+	Logging.Log(player.name .. " PlayerManager", Log)
     if player.character == nil then
-		Utility.DebugLogging("PlayerManager", "no character")
+		Logging.Log("no character", Log)
 		return
 	end
     if player.vehicle ~= nil then
-		Utility.DebugLogging("PlayerManager", "in vehicle")
+		Logging.Log("in vehicle", Log)
 		return
 	end
-    if not Track.IsTrackNearPosition(player.surface, player.position, TrainJumper.playerSafeBox) then
-		Utility.DebugLogging("PlayerManager", "not near track")
+    if not Track.IsTrackNearPosition(player.surface, player.position, global.Mod.State.playerSafeBox) then
+		Logging.Log("not near track", Log)
         return
 	end
     if not Train.IsATrainNearPlayer(player) then
-		Utility.DebugLogging("PlayerManager", "not near train")
+		Logging.Log("not near train", Log)
         return
     end
-	Utility.DebugLogging("PlayerManager", "going to jump")
+	Logging.Log("going to jump", Log)
     TrainJumper.JumpPlayerToFreeSpot(player)
 end
 
-TrainJumper.JumpPlayerToFreeSpot = function(player)
+
+function TrainJumper.JumpPlayerToFreeSpot(player)
 	local oldPosition = player.position
     local newPosition = TrainJumper.FindNewPlayerPosition(player.surface, player.position, 1)
     if not player.teleport(newPosition, player.surface) then
         game.print("ERROR - failed to jump player '" .. player.name .. "' to position(" .. newPosition.x .. ", " .. newPosition.y .. ")")
     end
 	player.surface.create_entity{ name = "teleported-smoke", position = oldPosition}
-    TrainJumper.playersJumpedDict[player.index] = game.tick + 60
+    global.Mod.State.playersJumpedDict[player.index] = game.tick + 60
 end
 
-TrainJumper.FindNewPlayerPosition = function(surface, startingPosition, searchRange, positionsCheckedDict)
+
+function TrainJumper.FindNewPlayerPosition(surface, startingPosition, searchRange, positionsCheckedDict)
     if positionsCheckedDict == nil then positionsCheckedDict = {} end
     local validPositionsArr = {}
     for x = startingPosition.x - searchRange, startingPosition.x + searchRange, 0.1 do
@@ -79,9 +94,10 @@ TrainJumper.FindNewPlayerPosition = function(surface, startingPosition, searchRa
     end
 end
 
-TrainJumper.CheckJumpPosition = function(surface, position)
+
+function TrainJumper.CheckJumpPosition(surface, position)
     if surface.count_entities_filtered{
-        area = Utility.CalculateBoundingBoxFromPositionAndRange(position, TrainJumper.playerSafeBox)
+        area = Utils.CalculateBoundingBoxFromPositionAndRange(position, global.Mod.State.playerSafeBox)
     } > 0 then
         return false
     end
@@ -94,12 +110,13 @@ TrainJumper.CheckJumpPosition = function(surface, position)
     return true
 end
 
-TrainJumper.SetTrainAvoidEvents = function()
-	if ModSettings == nil or ModSettings.trainAvoidMode == nil then return end --Catch OnLoad being called before ModChnaged on mod upgrade and skip it this time
-	if ModSettings.trainAvoidMode == "Preemtive" then
+
+function TrainJumper.SetTrainAvoidEvents()
+	if global.Mod == nil or global.Mod.Settings == nil or global.Mod.Settings.trainAvoidMode == nil then return end --Catch OnLoad being called before ModChanged on mod upgrade and skip it this time
+	if global.Mod.Settings.trainAvoidMode == "Preemtive" then
 		script.on_event(defines.events.on_tick, TrainJumper.Manager)
 		script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
-	elseif ModSettings.trainAvoidMode == "Reactive Only" then
+	elseif global.Mod.Settings.trainAvoidMode == "Reactive Only" then
 		script.on_event(defines.events.on_tick, TrainJumper.JumpedPlayersManager)
 		script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
 	else
@@ -108,25 +125,30 @@ TrainJumper.SetTrainAvoidEvents = function()
 	end
 end
 
-TrainJumper.EntityDamaged = function(event)
-	local entity = event.entity
-	Utility.DebugLogging("EntityDamaged", entity.name .. " EntityDamaged")
+
+function TrainJumper.EntityDamaged(event)
+    local debugLogging = false
+    local entity = event.entity
+	Logging.Log(entity.name .. " EntityDamaged", debugLogging)
 	if entity.type ~= "player" then
-		Utility.DebugLogging("EntityDamaged", "entity not character")
+		Logging.Log("entity not character", debugLogging)
 		return
 	end
 	if entity.player == nil then
-		Utility.DebugLogging("EntityDamaged", "entity has no player")
+		Logging.Log("entity has no player", debugLogging)
 		return
 	end
 	if not Train.IsEntityATrainType(event.cause) then
-		Utility.DebugLogging("EntityDamaged", "cause not train")
+		Logging.Log("cause not train", debugLogging)
 		return
 	end
-	Utility.DebugLogging("EntityDamaged", "final_damage_amount: " .. event.final_damage_amount)
-	Utility.DebugLogging("EntityDamaged", "starting entity health: " .. entity.health)
+	Logging.Log("final_damage_amount: " .. event.final_damage_amount, debugLogging)
+	Logging.Log("starting entity health: " .. entity.health, debugLogging)
 	entity.health = entity.health + event.final_damage_amount
-	Utility.DebugLogging("EntityDamaged", "returned entity to health: " .. entity.health)
-	Utility.DebugLogging("EntityDamaged", "going to jump")
+	Logging.Log("returned entity to health: " .. entity.health, debugLogging)
+	Logging.Log("going to jump", debugLogging)
     TrainJumper.JumpPlayerToFreeSpot(entity.player)
 end
+
+
+return TrainJumper

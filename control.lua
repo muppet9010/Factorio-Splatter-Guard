@@ -1,60 +1,53 @@
-require("scripts/utility")
-require("scripts/track")
-require("scripts/train")
-require("scripts/train_jumper")
+local TrainJumper = require("scripts/train_jumper")
 
 
+local function UpdatedTrainAvoidSetting()
+	global.Mod.Settings.trainAvoidMode = settings.global["train-avoid-mode"].value
+	TrainJumper.SetTrainAvoidEvents()
+end
 
 
-UpdateSetting = function(settingName)
+local function UpdateSetting(settingName)
 	if settingName == "train-avoid-mode" or settingName == nil then
 		UpdatedTrainAvoidSetting()
 	end
 end
 
-UpdatedTrainAvoidSetting = function()
-	ModSettings.trainAvoidMode = settings.global["train-avoid-mode"].value
-	TrainJumper.SetTrainAvoidEvents()
+
+local function CreateGlobals()
+	if global.Mod == nil then global.Mod = {} end
+	if global.Mod.Settings == nil then global.Mod.Settings = {} end
+    if global.Mod.State == nil then global.Mod.State = {} end
 end
 
 
-
-
-CreateGlobals = function()
-	if global.ModSettings == nil then global.ModSettings = {} end
+local function MigrateGlobals()
+	if global.ModSettings ~= nil then
+		global.Mod.Settings = global.ModSettings
+		global.ModSettings = nil
+	end
 end
 
-ReferenceGlobals = function()
-	ModSettings = global.ModSettings
-end
 
-OnStartup = function()
+local function OnStartup()
 	CreateGlobals()
-	ReferenceGlobals()
+	MigrateGlobals()
+	TrainJumper.PopulateStateDefaults()
 	UpdateSetting(nil)
 end
 
-OnLoad = function()
-	ReferenceGlobals()
+
+local function OnLoad()
 	TrainJumper.SetTrainAvoidEvents()
 end
 
-OnSettingChanged = function(event)
+
+local function OnSettingChanged(event)
 	UpdateSetting(event.setting)
 end
-
-
 
 
 script.on_init(OnStartup)
 script.on_load(OnLoad)
 script.on_event(defines.events.on_runtime_mod_setting_changed, OnSettingChanged)
 script.on_configuration_changed(OnStartup)
-
-
-
-
-Log = function(text)
-	game.print(text)
-	game.write_file("Extra_Biter_Control_logOutput.txt", tostring(text) .. "\r\n", true)
-end
