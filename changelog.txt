@@ -1,20 +1,36 @@
-0.1.3
-	Fixed: error when non player entity was damaged
-	Fixed: mod inactive after loading save which previously had current mod version
-
 ---------------------------------------------------------------------------------------------------
-0.1.2
-	Fixed: Error with 0.1.1 on loading save that had the previous version of the mod
-
+Version: 17.1.4
+Date: 2019-03-13
+  Features:
+    - Compatible with 0.17 Factorio
+  Changes:
+  Bugfixes:
+  Info:
+    - Changelog changed to new format
 ---------------------------------------------------------------------------------------------------
-0.1.1
-	Added: Protection from players running in to the side of the train, not just the trains front and back.
-	Added: Option of Reactive Only to train impacts, saving you after a train has hit you.
-	Added: Preemtive train protection includes the Reactive option as a backup.
-	Added: purple smoke effect when a player is teleported to safety
-	Changed: Train detection logic changed to be more flexible and lower UPS impact
-
+Version: 0.1.3
+Date: 2019-11-10
+  Bugfixes:
+    - Error when non player entity was damaged
+	- Mod inactive after loading save which previously had current mod version
 ---------------------------------------------------------------------------------------------------
-0.1.0
-	Initial Release
-	Preemtively jumps the player out of the way of incoming trains and holds them safely still.
+Version: 0.1.2
+Date: 2018-11-09
+  Bugfixes:
+    - Error with 0.1.1 on loading save that had the previous version of the mod
+---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2018-11-08
+  Features:
+    - Train detection logic changed to be more flexible and lower UPS impact
+	- Protection from players running in to the side of the train, not just the trains front and back.
+	- Option of Reactive Only to train impacts, saving you after a train has hit you.
+	- Preemtive train protection includes the Reactive option as a backup.
+  Changes:
+    - Purple smoke effect when a player is teleported to safety
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2018-08-23
+  Features:
+    - Initial Release
+	- Preemtively jumps the player out of the way of incoming trains and holds them safely still.
