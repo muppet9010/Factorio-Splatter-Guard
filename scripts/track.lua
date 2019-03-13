@@ -1,8 +1,10 @@
-Track = {}
+local Utils = require("utility/utils")
+local Track = {}
 
-Track.IsTrackNearPosition = function(surface, position, range)
+
+function Track.IsTrackNearPosition(surface, position, range)
     if surface.count_entities_filtered{
-        area = Utility.CalculateBoundingBoxFromPositionAndRange(position, range),
+        area = Utils.CalculateBoundingBoxFromPositionAndRange(position, range),
         type = {"straight-rail", "curved-rail"},
         limit = 1
     } > 0 then
@@ -12,9 +14,13 @@ Track.IsTrackNearPosition = function(surface, position, range)
     end
 end
 
-Track.GetTrackNearPositionAsArray = function(surface, position, range)
+
+function Track.GetTrackNearPositionAsArray(surface, position, range)
     return surface.find_entities_filtered{
-        area = Utility.CalculateBoundingBoxFromPositionAndRange(position, range),
+        area = Utils.CalculateBoundingBoxFromPositionAndRange(position, range),
         type = {"straight-rail", "curved-rail"}
     }
 end
+
+
+return Track
