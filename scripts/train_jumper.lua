@@ -102,7 +102,7 @@ function TrainJumper.CheckJumpPosition(surface, position)
     end
     if
         not surface.can_place_entity {
-            name = "player",
+            name = "character",
             position = position
         }
      then
@@ -132,7 +132,7 @@ function TrainJumper.EntityDamaged(event)
     local debugLogging = false
     local entity = event.entity
     Logging.Log(entity.name .. " EntityDamaged", debugLogging)
-    if entity.type ~= "player" then
+    if entity.type ~= "character" then
         Logging.Log("entity not character", debugLogging)
         return
     end

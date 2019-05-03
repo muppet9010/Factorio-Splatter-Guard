@@ -2,6 +2,7 @@
 Version: 17.1.5
 Date: 2019-05-03
   Features:
+    - Compatible and requires 0.17.35 API changes
   Changes:
   Bugfixes:
   Info:
