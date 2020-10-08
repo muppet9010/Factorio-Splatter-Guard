@@ -116,7 +116,7 @@ function TrainJumper.SetTrainAvoidEvents()
     if global.Mod == nil or global.Mod.Settings == nil or global.Mod.Settings.trainAvoidMode == nil then
         return
     end
-    if global.Mod.Settings.trainAvoidMode == "Preemtive" then
+    if global.Mod.Settings.trainAvoidMode == "Preemptive" then
         script.on_event(defines.events.on_tick, TrainJumper.Manager)
         script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
     elseif global.Mod.Settings.trainAvoidMode == "Reactive Only" then
