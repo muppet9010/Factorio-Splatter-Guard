@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.1.7
+Date: 2020-xxxx
+  Features:
+  Changes:
+  Bugfixes:
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 18.1.6
 Date: 2020-01-26
   Features:
@@ -30,7 +37,7 @@ Version: 0.1.3
 Date: 2019-11-10
   Bugfixes:
     - Error when non player entity was damaged
-	- Mod inactive after loading save which previously had current mod version
+    - Mod inactive after loading save which previously had current mod version
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2018-11-09
@@ -41,9 +48,9 @@ Version: 0.1.1
 Date: 2018-11-08
   Features:
     - Train detection logic changed to be more flexible and lower UPS impact
-	- Protection from players running in to the side of the train, not just the trains front and back.
-	- Option of Reactive Only to train impacts, saving you after a train has hit you.
-	- Preemtive train protection includes the Reactive option as a backup.
+    - Protection from players running in to the side of the train, not just the trains front and back.
+    - Option of Reactive Only to train impacts, saving you after a train has hit you.
+    - Preemtive train protection includes the Reactive option as a backup.
   Changes:
     - Purple smoke effect when a player is teleported to safety
 ---------------------------------------------------------------------------------------------------
@@ -51,4 +58,4 @@ Version: 0.1.0
 Date: 2018-08-23
   Features:
     - Initial Release
-	- Preemtively jumps the player out of the way of incoming trains and holds them safely still.
+    - Preemtively jumps the player out of the way of incoming trains and holds them safely still.

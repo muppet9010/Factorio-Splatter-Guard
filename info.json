@@ -1,13 +1,13 @@
 {
     "name": "splatter_guard",
-    "version": "18.1.6",
+    "version": "19.1.7",
     "title": "Splatter Guard",
     "author": "Muppet9010",
     "contact": "",
     "homepage": "",
-    "factorio_version": "0.18",
+    "factorio_version": "1.0",
     "dependencies": [
-        "base >= 0.18"
+        "base >= 1.0.0"
     ],
     "description": "Stops you being splattered by trains by teleporting you out of the way just before impact"
 }
