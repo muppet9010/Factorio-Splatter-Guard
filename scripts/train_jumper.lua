@@ -55,6 +55,16 @@ function TrainJumper.PlayerManager(player)
         Logging.Log("not near train", Log)
         return
     end
+    if game.active_mods["jetpack"] ~= nil then
+        local jetpacks = remote.call("jetpack", "get_jetpacks", {surface_index = player.character.surface.index})
+        if jetpacks ~= nil then
+            for _, jetpack in pairs(jetpacks) do
+                if jetpack.player_index == player.index then
+                    return
+                end
+            end
+        end
+    end
     Logging.Log("going to jump", Log)
     TrainJumper.JumpPlayerToFreeSpot(player)
 end
@@ -93,19 +103,10 @@ function TrainJumper.FindNewPlayerPosition(surface, startingPosition, searchRang
 end
 
 function TrainJumper.CheckJumpPosition(surface, position)
-    if
-        surface.count_entities_filtered {
-            area = Utils.CalculateBoundingBoxFromPositionAndRange(position, global.Mod.State.playerSafeBox)
-        } > 0
-     then
+    if surface.count_entities_filtered {area = Utils.CalculateBoundingBoxFromPositionAndRange(position, global.Mod.State.playerSafeBox)} > 0 then
         return false
     end
-    if
-        not surface.can_place_entity {
-            name = "character",
-            position = position
-        }
-     then
+    if not surface.can_place_entity {name = "character", position = position} then
         return false
     end
     return true
@@ -116,7 +117,7 @@ function TrainJumper.SetTrainAvoidEvents()
     if global.Mod == nil or global.Mod.Settings == nil or global.Mod.Settings.trainAvoidMode == nil then
         return
     end
-    if global.Mod.Settings.trainAvoidMode == "Preemtive" then
+    if global.Mod.Settings.trainAvoidMode == "Preemptive" then
         script.on_event(defines.events.on_tick, TrainJumper.Manager)
         script.on_event(defines.events.on_entity_damaged, TrainJumper.EntityDamaged)
     elseif global.Mod.Settings.trainAvoidMode == "Reactive Only" then
