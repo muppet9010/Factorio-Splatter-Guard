@@ -1,7 +1,9 @@
 ---------------------------------------------------------------------------------------------------
-Version: 19.1.7
-Date: 2020-xxxx
+Version: 20.1.7
+Date: 2020-11-26
   Features:
+    - Updated to work with 1.1.0 Factorio as-is.
+    - Add support for Jetpack mod, when active you won't be detected as colliding with trains.
   Changes:
   Bugfixes:
   Info:
