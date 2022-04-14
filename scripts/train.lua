@@ -1,6 +1,4 @@
 local Utils = require("utility/utils")
-local Logging = require("utility/logging")
-local Track = require("track")
 local Train = {}
 
 function Train.NewTrainsWithEntities()
@@ -10,57 +8,43 @@ function Train.NewTrainsWithEntities()
     }
 end
 
-function Train.IsATrainNearPlayer(player)
-    local debugLogging = false
-    Logging.Log(player.name .. " IsATrainNearPlayer", debugLogging)
-
-    local rawTrainEntitiesArr = Train.GetTrainEntitiesNearPositionAsArray(player.surface, player.position, global.Mod.State.trainSearchSize)
+---@param player_surface LuaSurface
+---@param player_position MapPosition
+function Train.IsATrainNearPlayer(player_surface, player_position)
+    local rawTrainEntitiesArr = Train.GetTrainEntitiesNearPositionAsArray(player_surface, player_position, global.Mod.State.trainSearchSize)
     if rawTrainEntitiesArr == nil or #rawTrainEntitiesArr == 0 then
-        Logging.Log("no train entities found near player", debugLogging)
         return false
     end
-    Logging.Log(#rawTrainEntitiesArr .. " train entities found near player", debugLogging)
     local nearTrainsWithEntitiesDict = Train.GetTrainsWithEntitiesFromTrainEntitiesArrAsDictionary(rawTrainEntitiesArr)
-    if debugLogging then
-        Logging.Log(Utils.GetTableLength(nearTrainsWithEntitiesDict) .. " trains found for train entities", debugLogging)
-    end
 
-    local playerNearTrackArr = Track.GetTrackNearPositionAsArray(player.surface, player.position, global.Mod.State.playerSafeBox)
-    Logging.Log(#playerNearTrackArr .. " track entities found near player", debugLogging)
-    if debugLogging then
-        for k, v in pairs(playerNearTrackArr) do
-            Logging.Log("player near track " .. k .. " position: " .. Logging.PositionToString(v.position), debugLogging)
-        end
-    end
+    local playerNearTrackArr =
+        player_surface.find_entities_filtered {
+        area = Utils.CalculateBoundingBoxFromPositionAndRange(player_position, global.Mod.State.playerSafeBox),
+        type = {"straight-rail", "curved-rail"}
+    }
 
-    for i, trainWithEntities in pairs(nearTrainsWithEntitiesDict) do
-        Logging.Log("reviewing train id " .. i, debugLogging)
+    for _, trainWithEntities in pairs(nearTrainsWithEntitiesDict) do
         if trainWithEntities.Train.speed ~= 0 then
             local trainsTrackArr = Train.GetTrackForTrainAsArray(trainWithEntities)
-            if debugLogging then
-                Logging.Log("train " .. i .. " has " .. #trainsTrackArr .. " track pieces for " .. #trainWithEntities.EntitiesArr .. " train entities", debugLogging)
-                for k, v in pairs(trainsTrackArr) do
-                    Logging.Log("train " .. i .. " near track " .. k .. " position: " .. Logging.PositionToString(v.position), debugLogging)
-                end
-            end
-            for j, trainTrack in pairs(trainsTrackArr) do
-                for k, nearTrack in pairs(playerNearTrackArr) do
-                    if nearTrack.position.x == trainTrack.position.x and nearTrack.position.y == trainTrack.position.y then
-                        Logging.Log("player near track that is near train", debugLogging)
+            for _, trainTrack in pairs(trainsTrackArr) do
+                local trainTrack_position = trainTrack.position
+                for _, nearTrack in pairs(playerNearTrackArr) do
+                    local nearTrack_position = nearTrack.position
+                    if nearTrack_position.x == trainTrack_position.x and nearTrack_position.y == trainTrack_position.y then
                         return true
                     end
                 end
             end
         end
     end
-    Logging.Log("player not near track that is near train", debugLogging)
+
     return false
 end
 
 function Train.GetTrackForTrainAsArray(trainWithEntities)
     local trackArr = {}
 
-    for i, trainEntity in pairs(trainWithEntities.EntitiesArr) do
+    for _, trainEntity in pairs(trainWithEntities.EntitiesArr) do
         for _, trackEntity in pairs(Train.GetTrackForTrainEntityAsArray(trainEntity, true)) do
             table.insert(trackArr, trackEntity)
         end
@@ -73,10 +57,6 @@ function Train.GetTrackForTrainAsArray(trainWithEntities)
 end
 
 function Train.GetTrackForTrainEntityAsArray(trainEntity, naturalOrientation)
-    local debugLogging = false
-    if debugLogging then
-        Logging.Log("trainEntity position " .. Logging.PositionToString(trainEntity.position) .. " orientation: " .. trainEntity.orientation .. " naturalOrientation: " .. tostring(naturalOrientation), debugLogging)
-    end
     local orientation = trainEntity.orientation
     if not naturalOrientation then
         orientation = orientation + 0.5
@@ -91,7 +71,6 @@ function Train.GetTrackForTrainEntityAsArray(trainEntity, naturalOrientation)
         x = trainEntity.position.x + (xMultiplier * trainEntityCollisionBoxLength),
         y = trainEntity.position.y - (yMultiplier * trainEntityCollisionBoxLength)
     }
-    Logging.Log("searchPosition " .. Logging.PositionToString(searchPosition), debugLogging)
     local searchArea = {
         left_top = {
             x = searchPosition.x - global.Mod.State.trainTrackSearchSize,
@@ -104,18 +83,13 @@ function Train.GetTrackForTrainEntityAsArray(trainEntity, naturalOrientation)
     }
 
     local searchedTracks = trainEntity.surface.find_entities_filtered {area = searchArea, type = {"straight-rail", "curved-rail"}}
-    if debugLogging then
-        for k, v in pairs(searchedTracks) do
-            Logging.Log("track position: " .. Logging.PositionToString(v.position), debugLogging)
-        end
-    end
     return searchedTracks
 end
 
 function Train.GetTrainEntitiesNearPositionAsArray(surface, position, range)
     return surface.find_entities_filtered {
         area = Utils.CalculateBoundingBoxFromPositionAndRange(position, range),
-        type = {"locomotive", "cargo-wagon", "fluid-wagon"}
+        type = {"locomotive", "cargo-wagon", "fluid-wagon", "artillery-wagon"}
     }
 end
 
@@ -123,32 +97,24 @@ function Train.GetTrainsWithEntitiesFromTrainEntitiesArrAsDictionary(trainEntiti
     local trainsWithEntitiesDict = {}
     for i, trainEntity in pairs(trainEntitiesArr) do
         local train = trainEntity.train
-        if trainsWithEntitiesDict[train.id] == nil then
+        local train_id = train.id
+        if trainsWithEntitiesDict[train_id] == nil then
             local trainsWithEntities = Train.NewTrainsWithEntities()
             table.insert(trainsWithEntities.EntitiesArr, trainEntity)
             trainsWithEntities.Train = train
-            trainsWithEntitiesDict[train.id] = trainsWithEntities
+            trainsWithEntitiesDict[train_id] = trainsWithEntities
         else
-            table.insert(trainsWithEntitiesDict[train.id].EntitiesArr, trainEntity)
+            table.insert(trainsWithEntitiesDict[train_id].EntitiesArr, trainEntity)
         end
     end
     return trainsWithEntitiesDict
 end
 
-function Train.IsEntityATrainType(entity)
-    if entity == nil then
-        return false
-    end
-    if entity.type == "locomotive" then
-        return true
-    end
-    if entity.type == "cargo-wagon" then
-        return true
-    end
-    if entity.type == "fluid-wagon" then
-        return true
-    end
-    return false
-end
+Train.TrainEntityTypes = {
+    locomotive = "locomotive",
+    ["cargo-wagon"] = "cargo-wagon",
+    ["fluid-wagon"] = "fluid-wagon",
+    ["artillery-wagon"] = "artillery-wagon"
+}
 
 return Train

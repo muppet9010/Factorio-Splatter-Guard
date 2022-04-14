@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 20.1.8
+Date: 2022-04-14
+  Features:
+  Changes:
+  Bugfixes:
+    - Artillery wagon type wasn't detected as a train carriage before.
+  Info:
+    - Added russian translations by Gelion17.
+    - Various simple code tweaks to save UPS.
+---------------------------------------------------------------------------------------------------
 Version: 20.1.7
 Date: 2020-11-26
   Features:
