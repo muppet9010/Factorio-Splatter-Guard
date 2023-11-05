@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 20.1.9
+Date: 2023-11-05
+  Features:
+  Changes:
+  Bugfixes:
+    - Corrected the russian translation to only show for russian locales and not all.
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 20.1.8
 Date: 2022-04-14
   Features:
